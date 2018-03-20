@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.cgi.master</groupId>
+    <artifactId>ProjectMaster</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../ProjectMaster/pom.xml</relativePath>
+  </parent>
+  <groupId>com.cgi.test</groupId>
+  <artifactId>ProjectModule</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+
+  <profiles>
+    <profile>
+        <id>linux64</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+        <properties>
+            <build_os>linux</build_os>
+            <build_ws>gtk</build_ws>
+            <build_arch>x86_64</build_arch>
+        </properties>
+    </profile>
+
+    <profile>
+        <id>win64</id>
+        <activation>
+            <property>
+                <name>env</name>
+                <value>win64</value>
+            </property>
+        </activation>
+        <properties>
+            <build_os>win32</build_os>
+            <build_ws>win32</build_ws>
+            <build_arch>x86_64</build_arch>
+        </properties>
+    </profile>
+</profiles>
+   
+  <repositories>
+  <repository>
+  <id>external</id>
+  <url>https://oss.sonatype.org/content/repositories/releases</url>
+  </repository>
+  </repositories>
+  <build>
+  <plugins>
+  <plugin>
+    <groupId>org.eclipse.tycho</groupId>
+    <artifactId>target-platform-configuration</artifactId>
+     <version>1.1.0</version>
+    <configuration>
+        <environments>
+            <environment>
+                <os>${build_os}</os>
+                <ws>${build_ws}</ws>
+                <arch>${build_arch}</arch>
+            </environment>
+        </environments>
+    </configuration>
+</plugin>
+  </plugins>
+  
+  </build> 
+</project>
