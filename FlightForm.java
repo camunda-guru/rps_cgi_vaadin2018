@@ -4,12 +4,17 @@ import com.cgi.travel.clients.RestClient;
 import com.cgi.travel.models.Flight;
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.server.Page;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -40,6 +45,21 @@ public class FlightForm extends FormLayout{
 	    save.setStyleName(ValoTheme.BUTTON_PRIMARY);
 	    delete.setStyleName(ValoTheme.BUTTON_DANGER);
 	    save.setClickShortcut(KeyCode.ENTER);
+	    
+	    
+	    
+	    binder.forField(fromCity)
+	      .withValidator(new StringLengthValidator(
+	        "Name must be between 2 and 50 characters long",
+	        2, 50))
+	    .bind(Flight::getFromCity, Flight::setFromCity);
+	    
+	    fromCity.addValueChangeListener(e->{
+	    	this.flight.setFromCity(this.fromCity.getValue());
+	    });
+	    fromCity.setValueChangeMode(ValueChangeMode.LAZY);
+	    
+	    
 	    /*
 	    binder.forField(flightCode)
 	    .withConverter(
@@ -47,8 +67,38 @@ public class FlightForm extends FormLayout{
 	    .bind(Flight::getFlightCode, Flight::setFlightCode);
 	    */
 	    binder.bindInstanceFields(this);
-	    save.addClickListener(e -> this.save());
-	   // delete.addClickListener(e -> this.delete());
+	    if(this!=null)
+	    {
+	    save.addClickListener(
+	    		
+	    		
+	    		e -> {
+	    			
+	    			if((this.flight.getFromCity()==null))
+	    			{
+	    				new Notification("No from city  found",
+	    					    "Data cannot be submitted",
+	    					    Notification.Type.WARNING_MESSAGE, true)
+	    					    .show(Page.getCurrent());
+	    			}
+	    			if((this.flight.getFromCity()!=null)&&(this.flight.getFromCity().length()==0))
+	    				
+	    			{
+	    				new Notification("Validation Error",
+	    					    "Data cannot be submitted",
+	    					    Notification.Type.WARNING_MESSAGE, true)
+	    					    .show(Page.getCurrent());
+	    			}
+	    				    			
+	    			else
+	    			
+	    			this.save();
+	    		}
+	    		
+	    		
+	    		);
+	    }
+	    delete.addClickListener(e -> this.delete());
 	}
 	
 
@@ -63,19 +113,21 @@ public class FlightForm extends FormLayout{
 	    //flightCode.selectAll();
 		
 	}
-	/*
+
 	private void delete() {
-	    serviceOp.delete(this.customer);
+	    service.delete(this.flight);
 	    myUI.updateList();
 	    setVisible(false);
 	}
-	*/
+	
 
 	private void save() {
-		//System.out.println(this.flight);
+		System.out.println(this.flight.getFromCity());
 		client.sendFlight(flight);
-	    service.save(this.flight);
+	   // service.save(this.flight);
 	    myUI.updateList();
 	    setVisible(false);
 	}
+	
+	
 }
